@@ -1,8 +1,9 @@
 import './App.css'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import Movies from './components/movies'
 import { useMovies } from './hooks/useMovies'
 import { useSearch } from './hooks/useSearch'
+import debounce from 'just-debounce-it'
 // manera con useref
 // const inputEl = inputRef.current
 // const value = inputEl.value
@@ -18,12 +19,17 @@ function App () {
     event.preventDefault()
     getMovies({ Search })
   }
+  const debounceGetMovis = useCallback(debounce(newSearch => {
+    getMovies({ Search: newSearch })
+  }, 300), [getMovies])
   const handleChange = (event) => {
-    updateSearch(event.target.value)
+    const newSearch = event.target.value
+    setSorts(false)
+    updateSearch(newSearch)
+    debounceGetMovis(newSearch)
   }
   const handleSort = () => {
     setSorts(!sorts)
-    console.log(sorts)
   }
 
   return (
